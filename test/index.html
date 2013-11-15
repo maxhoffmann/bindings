@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>bindings tests</title>
+	<link rel="stylesheet" href="../components/visionmedia-mocha/mocha.css">
+	<style>#testdom { display: none; }</style>
+</head>
+<body>
+	<div id="mocha"></div>
+	<div id="testdom">
+		<div>
+			<span data-bind="dog.type">dog</span>
+			<div>
+				<span data-bind="dog.characteristics.color">white</span>
+				<span data-bind="dog.characteristics.size">small</span>
+			</div>
+		</div>
+		<div id="roottest">
+			<span data-bind="pokemon.color">yellow</span>
+		</div>
+	</div>
+	<script src="../components/visionmedia-mocha/mocha.js"></script>
+	<script>mocha.setup('bdd');</script>
+	<script src="../dev/bindings.js"></script>
+	<script src="tests.js"></script>
+	<script>mocha.run()</script>
+</body>
+</html>
