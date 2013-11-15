@@ -5946,20 +5946,23 @@ function bindings(filter, root) {\n\
 \t}\n\
 \troot = root || document;\n\
 \tvar bindingsObject = {};\n\
-\tvar elements = (!filter) ? $('[data-bind]', root) : $('[data-bind^=\"'+filter+'.\"]', root);\n\
+\tvar selector = (filter) ? '[data-bind^=\"'+filter+'.\"]' : '[data-bind]';\n\
+\tvar elements = $(selector, root);\n\
 \telements.forEach(appendToBindingsObject.bind(bindingsObject, filter), bindingsObject);\n\
 \treturn bindingsObject;\n\
 }\n\
 \n\
 function appendToBindingsObject(filter, element) {\n\
-\tvar binding = (filter) ? element.getAttribute('data-bind').split(filter+'.')[1] : element.getAttribute('data-bind');\n\
+\tvar binding = element.getAttribute('data-bind');\n\
+\tif ( filter ) binding = binding.split(filter+'.')[1];\n\
 \tvar bindingStrings = binding.split('.');\n\
-\tbindingStrings.reduce(convertStringToObject.bind(this, gettersAndSetters.bind(this, element)), this);\n\
+\n\
+\tbindingStrings.reduce(convertStringToObject.bind(this, addGettersAndSetters.bind(this, element)), this);\n\
 }\n\
 \n\
-function convertStringToObject(callback, object, string, index, arrayOfStrings) {\n\
+function convertStringToObject(addGettersAndSetters, object, string, index, arrayOfStrings) {\n\
 \tif ( index === arrayOfStrings.length-1 ) {\n\
-\t\tcallback(object, string);\n\
+\t\taddGettersAndSetters(object, string);\n\
 \t}\n\
 \tif (!object[string]) {\n\
 \t\tobject[string] = {};\n\
@@ -5967,7 +5970,7 @@ function convertStringToObject(callback, object, string, index, arrayOfStrings) 
 \treturn object[string];\n\
 }\n\
 \n\
-function gettersAndSetters(element, object, property) {\n\
+function addGettersAndSetters(element, object, property) {\n\
 \tObject.defineProperty(object, property, {\n\
 \t\tget: function() {\n\
 \t\t\tif (!element.parentNode) {\n\

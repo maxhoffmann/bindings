@@ -209,20 +209,23 @@ function bindings(filter, root) {
 	}
 	root = root || document;
 	var bindingsObject = {};
-	var elements = (!filter) ? $('[data-bind]', root) : $('[data-bind^="'+filter+'."]', root);
+	var selector = (filter) ? '[data-bind^="'+filter+'."]' : '[data-bind]';
+	var elements = $(selector, root);
 	elements.forEach(appendToBindingsObject.bind(bindingsObject, filter), bindingsObject);
 	return bindingsObject;
 }
 
 function appendToBindingsObject(filter, element) {
-	var binding = (filter) ? element.getAttribute('data-bind').split(filter+'.')[1] : element.getAttribute('data-bind');
+	var binding = element.getAttribute('data-bind');
+	if ( filter ) binding = binding.split(filter+'.')[1];
 	var bindingStrings = binding.split('.');
-	bindingStrings.reduce(convertStringToObject.bind(this, gettersAndSetters.bind(this, element)), this);
+
+	bindingStrings.reduce(convertStringToObject.bind(this, addGettersAndSetters.bind(this, element)), this);
 }
 
-function convertStringToObject(callback, object, string, index, arrayOfStrings) {
+function convertStringToObject(addGettersAndSetters, object, string, index, arrayOfStrings) {
 	if ( index === arrayOfStrings.length-1 ) {
-		callback(object, string);
+		addGettersAndSetters(object, string);
 	}
 	if (!object[string]) {
 		object[string] = {};
@@ -230,7 +233,7 @@ function convertStringToObject(callback, object, string, index, arrayOfStrings) 
 	return object[string];
 }
 
-function gettersAndSetters(element, object, property) {
+function addGettersAndSetters(element, object, property) {
 	Object.defineProperty(object, property, {
 		get: function() {
 			if (!element.parentNode) {
