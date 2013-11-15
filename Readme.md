@@ -31,7 +31,7 @@ Include some `data-bind` attributes in your HTML:
 	<li data-bind="animal.type">dog</li>
 	<li data-bind="animal.color">white</li>
 </ul>
-``
+```
 
 Get some data from the DOM:
 
