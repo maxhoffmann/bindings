@@ -1,11 +1,11 @@
 
 # bindings
-a minimal binding library for the dom. runs with component.io and as standalone.
+a minimal binding library for the DOM. runs with component.io and as standalone.
 
-bindings.js uses ES5 getters and setters to get or update dom elements. Keep in mind that
-you should treat this library as another way to access the dom. Don’t do things like
+bindings.js uses ES5 getters and setters to get or update DOM elements. Keep in mind that
+you should treat this library as another way to access the DOM. Don’t do things like
 read, write, read, write… or performance might hurt. For best performance, cache the returned
-object of bindings() and only get a new one, when you’ve expected dom changes. Additionally
+object of bindings() and only get a new one, when you’ve expected DOM changes. Additionally
 specify a root element whenever possible. Before you optimize anything: "tools not rules".
 The DOM may not be your bottleneck as it is pretty fast in modern browsers.
 
