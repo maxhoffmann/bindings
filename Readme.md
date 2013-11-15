@@ -7,7 +7,7 @@ a minimal binding library for the dom. runs with component.io and as standalone.
 Install with [component(1)](http://component.io):
 
 ```bash
-$ component install maxhoffmann/domdata
+$ component install maxhoffmann/bindings
 ```
 
 …or simply download the repository. Use `bindings.standalone.js` if you don’t use component.io.
