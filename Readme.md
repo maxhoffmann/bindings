@@ -65,16 +65,22 @@ bindings('person', rootElement).name
 
 ## Customization
 
-Make a new build (includes standalone build):
+Make a new dev build:
 
 ```bash
-$ make
+$ make dev
 ```
 
 Run tests by opening `test/index.html` or run:
 
 ```bash
 $ make test
+```
+
+If all of your tests pass, make a new production build (includes standalone build):
+
+```bash
+$ make
 ```
 
 ## License
