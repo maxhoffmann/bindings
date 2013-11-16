@@ -5941,54 +5941,58 @@ require.register("bindings/index.js", Function("exports, require, module",
 "\"use strict\";\n\
 \n\
 function bindings(filter, root) {\n\
+\n\
 \tif ( !('querySelectorAll' in document && 'defineProperty' in Object && 'reduce' in Array.prototype) ) {\n\
 \t\treturn {};\n\
 \t}\n\
 \troot = root || document;\n\
+\n\
 \tvar bindingsObject = {};\n\
 \tvar selector = (filter) ? '[data-bind^=\"'+filter+'.\"]' : '[data-bind]';\n\
 \tvar elements = $(selector, root);\n\
-\telements.forEach(appendToBindingsObject.bind(bindingsObject, filter), bindingsObject);\n\
+\n\
+\telements.forEach(appendToBindingsObject, bindingsObject);\n\
+\n\
+\tfunction appendToBindingsObject(element) {\n\
+\t\tvar binding = element.getAttribute('data-bind');\n\
+\t\tif ( filter ) binding = binding.split(filter+'.')[1];\n\
+\t\tvar bindingStrings = binding.split('.');\n\
+\n\
+\t\tbindingStrings.reduce(convertStringToObject, this);\n\
+\n\
+\t\tfunction convertStringToObject(object, string, index, arrayOfStrings) {\n\
+\t\t\tif ( index === arrayOfStrings.length-1 ) {\n\
+\t\t\t\taddGettersAndSetters(object, string);\n\
+\t\t\t}\n\
+\t\t\tif (!object[string]) {\n\
+\t\t\t\tobject[string] = {};\n\
+\t\t\t}\n\
+\t\t\treturn object[string];\n\
+\t\t}\n\
+\n\
+\t\tfunction addGettersAndSetters(object, property) {\n\
+\t\t\tObject.defineProperty(object, property, {\n\
+\t\t\t\tget: function() {\n\
+\t\t\t\t\tif (!element.parentNode) {\n\
+\t\t\t\t\t\tdelete object[property];\n\
+\t\t\t\t\t\treturn undefined;\n\
+\t\t\t\t\t}\n\
+\t\t\t\t\treturn element.innerHTML;\n\
+\t\t\t\t},\n\
+\t\t\t\tset: function(value) {\n\
+\t\t\t\t\tif (!element.parentNode) {\n\
+\t\t\t\t\t\tdelete object[property];\n\
+\t\t\t\t\t\tthrow new Error('element is not part of the dom');\n\
+\t\t\t\t\t}\n\
+\t\t\t\t\telement.innerHTML = value;\n\
+\t\t\t\t},\n\
+\t\t\t\tenumerable: true,\n\
+\t\t\t\tconfigurable: true\n\
+\t\t\t});\n\
+\t\t}\n\
+\t}\n\
+\n\
 \treturn bindingsObject;\n\
-}\n\
-\n\
-function appendToBindingsObject(filter, element) {\n\
-\tvar binding = element.getAttribute('data-bind');\n\
-\tif ( filter ) binding = binding.split(filter+'.')[1];\n\
-\tvar bindingStrings = binding.split('.');\n\
-\n\
-\tbindingStrings.reduce(convertStringToObject.bind(this, addGettersAndSetters.bind(this, element)), this);\n\
-}\n\
-\n\
-function convertStringToObject(addGettersAndSetters, object, string, index, arrayOfStrings) {\n\
-\tif ( index === arrayOfStrings.length-1 ) {\n\
-\t\taddGettersAndSetters(object, string);\n\
-\t}\n\
-\tif (!object[string]) {\n\
-\t\tobject[string] = {};\n\
-\t}\n\
-\treturn object[string];\n\
-}\n\
-\n\
-function addGettersAndSetters(element, object, property) {\n\
-\tObject.defineProperty(object, property, {\n\
-\t\tget: function() {\n\
-\t\t\tif (!element.parentNode) {\n\
-\t\t\t\tdelete object[property];\n\
-\t\t\t\treturn undefined;\n\
-\t\t\t}\n\
-\t\t\treturn element.innerHTML;\n\
-\t\t},\n\
-\t\tset: function(value) {\n\
-\t\t\tif (!element.parentNode) {\n\
-\t\t\t\tdelete object[property];\n\
-\t\t\t\tthrow new Error('element is not part of the dom');\n\
-\t\t\t}\n\
-\t\t\telement.innerHTML = value;\n\
-\t\t},\n\
-\t\tenumerable: true,\n\
-\t\tconfigurable: true\n\
-\t});\n\
 }\n\
 \n\
 function $(selector, root) {\n\
