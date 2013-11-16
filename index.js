@@ -7,52 +7,57 @@ function bindings(filter, root) {
 	}
 	root = root || document;
 
-	var bindingsObject = {};
 	var selector = (filter) ? '[data-bind^="'+filter+'."]' : '[data-bind]';
 	var elements = $(selector, root);
 
-	elements.forEach(appendToBindingsObject, bindingsObject);
+	return elements.reduce(function(bindings, element, index) {
+		var binding = getBinding(element, filter);
+		binding.reduce(addToBindingsObject, bindings)
 
-	function appendToBindingsObject(element) {
-		var binding = element.getAttribute('data-bind');
-		if ( filter ) binding = binding.split(filter+'.')[1];
-		var bindingStrings = binding.split('.');
-
-		bindingStrings.reduce(convertStringToObject, this);
-
-		function convertStringToObject(object, string, index, arrayOfStrings) {
-			if ( index === arrayOfStrings.length-1 ) {
-				addGettersAndSetters(object, string);
+		function addToBindingsObject(bindings, bindingPart, index, binding) {
+			if ( index === binding.length-1 ) {
+				addGettersAndSetters(bindings, bindingPart);
 			}
-			if (!object[string]) {
-				object[string] = {};
+			if (!bindings[bindingPart]) {
+				bindings[bindingPart] = {};
 			}
-			return object[string];
+			return bindings[bindingPart];
 		}
 
-		function addGettersAndSetters(object, property) {
-			Object.defineProperty(object, property, {
-				get: function() {
-					if (!element.parentNode) {
-						delete object[property];
-						return undefined;
-					}
-					return element.innerHTML;
-				},
-				set: function(value) {
-					if (!element.parentNode) {
-						delete object[property];
-						throw new Error('element is not part of the dom');
-					}
-					element.innerHTML = value;
-				},
+		function addGettersAndSetters(bindings, key) {
+			Object.defineProperty(bindings, key, {
+				get: getter,
+				set: setter,
 				enumerable: true,
 				configurable: true
 			});
-		}
-	}
 
-	return bindingsObject;
+			function getter() {
+				if (!element.parentNode) {
+					delete bindings[key];
+					return undefined;
+				}
+				return element.innerHTML;
+			}
+
+			function setter(value) {
+				if (!element.parentNode) {
+					delete bindings[key];
+					throw new Error('element is not part of the dom');
+				}
+				element.innerHTML = value;
+			}
+		}
+
+		return bindings;
+	}, {});
+
+}
+
+function getBinding(element, filter) {
+	var binding = element.getAttribute('data-bind');
+	if ( filter ) binding = binding.split(filter+'.')[1];
+	return binding.split('.');
 }
 
 function $(selector, root) {
