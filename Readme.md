@@ -44,8 +44,8 @@ Get some data from the DOM:
 
 ```javascript
 var dom = bindings();
-var name = dom.person.name;
-var color = dom.animal.color;
+var name = dom.person.name;	// name is 'Max'
+var color = dom.animal.color; // color is 'white'
 ```
 
 Update some data in the DOM:
