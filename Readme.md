@@ -91,4 +91,4 @@ $ make
 
 ## License
 
-MIT
+The MIT License (MIT)
