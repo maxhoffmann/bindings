@@ -6,7 +6,7 @@ bindings.js uses ES5 getters and setters to get or update DOM elements. Keep in 
 you should treat this library as another way to access the DOM. Don’t do things like
 read, write, read, write… or performance might hurt. For best performance, cache the returned
 object of bindings() and only get a new one, when you’ve expected DOM changes. Additionally
-specify a root element whenever possible. Before you optimize anything: "tools not rules".
+specify a root element whenever possible. Before you optimize anything: "Use tools, not rules".
 The DOM may not be your bottleneck as it is pretty fast in modern browsers.
 
 ## Installation
@@ -27,7 +27,7 @@ If you use component.io make sure to require the library:
 var bindings = require('bindings');
 ```
 
-Include some `data-bind` attributes in your HTML:
+Include `data-bind` attributes in your HTML:
 
 ```html
 <ul>
@@ -40,7 +40,7 @@ Include some `data-bind` attributes in your HTML:
 </ul>
 ```
 
-Get some data from the DOM:
+Get data from the DOM:
 
 ```javascript
 var dom = bindings();
@@ -48,7 +48,7 @@ var name = dom.person.name;	// name is 'Max'
 var color = dom.animal.color; // color is 'white'
 ```
 
-Update some data in the DOM:
+Update data in the DOM:
 
 ```javascript
 var dom = bindings();
