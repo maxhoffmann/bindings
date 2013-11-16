@@ -212,9 +212,9 @@ function bindings(filter, root) {
 	var selector = (filter) ? '[data-bind^="'+filter+'."]' : '[data-bind]';
 	var elements = $(selector, root);
 
-	return elements.reduce(function(bindings, element, index) {
+	return elements.reduce(function(bindings, element) {
 		var binding = getBinding(element, filter);
-		binding.reduce(addToBindingsObject, bindings)
+		binding.reduce(addToBindingsObject, bindings);
 
 		function addToBindingsObject(bindings, bindingPart, index, binding) {
 			if ( index === binding.length-1 ) {

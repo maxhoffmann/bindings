@@ -5950,9 +5950,9 @@ function bindings(filter, root) {\n\
 \tvar selector = (filter) ? '[data-bind^=\"'+filter+'.\"]' : '[data-bind]';\n\
 \tvar elements = $(selector, root);\n\
 \n\
-\treturn elements.reduce(function(bindings, element, index) {\n\
+\treturn elements.reduce(function(bindings, element) {\n\
 \t\tvar binding = getBinding(element, filter);\n\
-\t\tbinding.reduce(addToBindingsObject, bindings)\n\
+\t\tbinding.reduce(addToBindingsObject, bindings);\n\
 \n\
 \t\tfunction addToBindingsObject(bindings, bindingPart, index, binding) {\n\
 \t\t\tif ( index === binding.length-1 ) {\n\
