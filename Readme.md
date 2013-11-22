@@ -86,8 +86,10 @@ bindings('person', rootElement).name
 Convert data to JSON:
 
 ```javascript
-var json = JSON.stringify( bindings('dog') );
-var json = JSON.stringify( bindings().dog ); // same result
+var json = JSON.stringify( bindings('animal') );
+var json = JSON.stringify( bindings().animal ); // same result
+
+console.log(json); // "{"type":"cat","color":"black"}"
 ```
 
 ## Customization
