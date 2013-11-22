@@ -54,7 +54,7 @@ Update data in the DOM:
 var dom = bindings();
 dom.person.name = 'Joe';
 dom.animal.type = 'cat';
-dom.animal.color = '<span>black</span>'; // you can use HTML
+dom.animal.color = '<span>black</span>'; // you can use HTMLt
 ```
 
 And the DOM changes automatically:
@@ -66,7 +66,7 @@ And the DOM changes automatically:
 </ul>
 <ul>
 	<li data-bind="animal.type">cat</li>
-	<li data-bind="animal.color">black</li>
+	<li data-bind="animal.color"><span>black</span></li>
 </ul>
 ```
 
