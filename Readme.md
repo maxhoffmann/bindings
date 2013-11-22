@@ -69,6 +69,13 @@ You may specify a root element:
 bindings('person', rootElement).name
 ```
 
+Convert data to JSON:
+
+```javascript
+var json = JSON.stringify( bindings('dog') );
+var json = JSON.stringify( bindings().dog ); // same result
+```
+
 ## Customization
 
 Make a new dev build:
