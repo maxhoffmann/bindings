@@ -89,7 +89,7 @@ Convert data to JSON:
 var json = JSON.stringify( bindings('animal') );
 var json = JSON.stringify( bindings().animal ); // same result
 
-console.log(json); // "{"type":"cat","color":"black"}"
+console.log(json); // "{"type":"cat","color":"<span>black</span>"}"
 ```
 
 ## Customization
