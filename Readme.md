@@ -44,8 +44,8 @@ Get data from the DOM:
 
 ```javascript
 var dom = bindings();
-var name = dom.person.name;	// name is 'Max'
-var color = dom.animal.color; // color is 'white'
+var name = dom.person.name;	// Max
+var color = dom.animal.color; // white
 ```
 
 Update data in the DOM:
@@ -73,8 +73,8 @@ And the DOM changes automatically:
 You may use a different syntax:
 
 ```javascript
-bindings().person.name
-bindings('person').name
+bindings().person.name // Max
+bindings('person').name // Max
 ```
 
 You may specify a root element:
