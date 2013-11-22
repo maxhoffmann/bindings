@@ -1,6 +1,6 @@
 
 # bindings
-a minimal binding library for the DOM. runs with component.io and as standalone.
+a minimal binding library for the DOM. runs with component.io and standalone.
 
 bindings.js uses ES5 getters and setters to get or update DOM elements. Keep in mind that
 you should treat this library as another way to access the DOM. Don’t do things like
