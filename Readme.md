@@ -54,6 +54,20 @@ Update data in the DOM:
 var dom = bindings();
 dom.person.name = 'Joe';
 dom.animal.type = 'cat';
+dom.animal.color = '<span>black</span>'; // you can use HTML
+```
+
+And the DOM changes automatically:
+
+```html
+<ul>
+	<li data-bind="person.name">Joe</li>
+	<li data-bind="person.age">24</li>
+</ul>
+<ul>
+	<li data-bind="animal.type">cat</li>
+	<li data-bind="animal.color">black</li>
+</ul>
 ```
 
 You may use a different syntax:
