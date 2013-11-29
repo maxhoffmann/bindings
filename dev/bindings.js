@@ -5954,6 +5954,12 @@ function bindings(filter, root) {\n\
 \t\tvar binding = getBinding(element, filter);\n\
 \t\tbinding.reduce(addToBindingsObject, bindings);\n\
 \n\
+\t\tfunction getBinding(element, filter) {\n\
+\t\t\tvar binding = element.getAttribute('data-bind');\n\
+\t\t\tif ( filter ) binding = binding.split(filter+'.')[1];\n\
+\t\t\treturn binding.split('.');\n\
+\t\t}\n\
+\n\
 \t\tfunction addToBindingsObject(bindings, bindingPart, index, binding) {\n\
 \t\t\tif ( index === binding.length-1 ) {\n\
 \t\t\t\taddGettersAndSetters(bindings, bindingPart);\n\
@@ -5992,12 +5998,6 @@ function bindings(filter, root) {\n\
 \t\treturn bindings;\n\
 \t}, {});\n\
 \n\
-}\n\
-\n\
-function getBinding(element, filter) {\n\
-\tvar binding = element.getAttribute('data-bind');\n\
-\tif ( filter ) binding = binding.split(filter+'.')[1];\n\
-\treturn binding.split('.');\n\
 }\n\
 \n\
 function $(selector, root) {\n\

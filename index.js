@@ -14,6 +14,12 @@ function bindings(filter, root) {
 		var binding = getBinding(element, filter);
 		binding.reduce(addToBindingsObject, bindings);
 
+		function getBinding(element, filter) {
+			var binding = element.getAttribute('data-bind');
+			if ( filter ) binding = binding.split(filter+'.')[1];
+			return binding.split('.');
+		}
+
 		function addToBindingsObject(bindings, bindingPart, index, binding) {
 			if ( index === binding.length-1 ) {
 				addGettersAndSetters(bindings, bindingPart);
@@ -52,12 +58,6 @@ function bindings(filter, root) {
 		return bindings;
 	}, {});
 
-}
-
-function getBinding(element, filter) {
-	var binding = element.getAttribute('data-bind');
-	if ( filter ) binding = binding.split(filter+'.')[1];
-	return binding.split('.');
 }
 
 function $(selector, root) {
