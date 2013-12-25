@@ -2,7 +2,7 @@
   "name": "bindings",
   "repo": "maxhoffmann/bindings",
   "description": "a minimal binding library for the dom",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "keywords": [],
   "dependencies": {},
   "development": {
