@@ -83,6 +83,7 @@ describe('bindings', function () {
 	it('should allow multiple values in objects in arrays', function () {
 		var data = bindings();
 
+		assert( data.shoppinglist[2].title === 'cheese', 'adds multiple values to objects in arrays' );
 		assert( data.shoppinglist[2].status === 'done', 'adds multiple values to objects in arrays' );
 	});
 
