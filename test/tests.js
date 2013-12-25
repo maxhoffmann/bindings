@@ -68,4 +68,29 @@ describe('bindings', function () {
 		}
 	});
 
+	it('should return an array for properties ending with []', function () {
+		var data = bindings();
+
+		assert( Array.isArray(data.shoppinglist), 'returns array' );
+	});
+
+	it('should add objects to arrays', function () {
+		var data = bindings();
+
+		assert( data.shoppinglist[0].title === 'Milch', 'adds objects to array correctly' );
+	});
+
+	it('should allow multiple values in objects in arrays', function () {
+		var data = bindings();
+
+		assert( data.shoppinglist[2].status === 'done', 'adds multiple values to objects in arrays' );
+	});
+
+	it('should allow nested objects in arrays', function () {
+		var data = bindings('wishlist');
+
+		assert( data.technology[0].game.platform === 'playstation4', 'adds nested objects to arrays' );
+		assert( data.technology[1].game.title === 'Ryse', 'adds nested objects to arrays' );
+	});
+
 });

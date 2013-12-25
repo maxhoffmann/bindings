@@ -5940,38 +5940,64 @@ module.exports = function(expr, msg){\n\
 require.register("bindings/index.js", Function("exports, require, module",
 "\"use strict\";\n\
 \n\
-function bindings(filter, root) {\n\
+var REGEX_ARRAY = /\\[([0-9]+)\\]$/;\n\
 \n\
-\tif ( !('querySelectorAll' in document && 'defineProperty' in Object && 'reduce' in Array.prototype) ) {\n\
+function bindings(filter, rootElement) {\n\
+\n\
+\tif ( !('querySelectorAll' in document\n\
+\t\t&& 'defineProperty' in Object\n\
+\t\t&& 'reduce' in Array.prototype)\n\
+\t) {\n\
 \t\treturn {};\n\
 \t}\n\
-\troot = root || document;\n\
+\trootElement = rootElement || document;\n\
 \n\
 \tvar selector = (filter) ? '[data-bind^=\"'+filter+'.\"]' : '[data-bind]';\n\
-\tvar elements = $(selector, root);\n\
+\tvar elementsWithBindings = $(selector, rootElement);\n\
 \n\
-\treturn elements.reduce(function(bindings, element) {\n\
-\t\tvar binding = getBinding(element, filter);\n\
-\t\tbinding.reduce(addToBindingsObject, bindings);\n\
+\treturn elementsWithBindings.reduce(createBindingsObject, {});\n\
 \n\
-\t\tfunction getBinding(element, filter) {\n\
-\t\t\tvar binding = element.getAttribute('data-bind');\n\
-\t\t\tif ( filter ) binding = binding.split(filter+'.')[1];\n\
-\t\t\treturn binding.split('.');\n\
+\tfunction createBindingsObject(bindings, element) {\n\
+\t\tvar bindingsArray = getBindingsArrayFromElement(element, filter);\n\
+\t\tbindingsArray.reduce(convertBindingStringToObject, bindings);\n\
+\n\
+\t\tfunction getBindingsArrayFromElement(element, filter) {\n\
+\t\t\tvar bindingString = element.getAttribute('data-bind');\n\
+\t\t\tif ( filter ) bindingString = bindingString.split(filter+'.')[1];\n\
+\t\t\treturn bindingString.split('.');\n\
 \t\t}\n\
 \n\
-\t\tfunction addToBindingsObject(bindings, bindingPart, index, binding) {\n\
-\t\t\tif ( index === binding.length-1 ) {\n\
-\t\t\t\taddGettersAndSetters(bindings, bindingPart);\n\
+\t\tfunction convertBindingStringToObject(bindingObject, bindingString, index, bindingArray) {\n\
+\t\t\tif ( REGEX_ARRAY.test(bindingString) ) {\n\
+\t\t\t\tbindingString = bindingString.replace(REGEX_ARRAY,\"\");\n\
+\t\t\t\tif ( !bindingObject[bindingString] ) {\n\
+\t\t\t\t\tbindingObject[bindingString] = [];\n\
+\t\t\t\t}\n\
 \t\t\t}\n\
-\t\t\tif (!bindings[bindingPart]) {\n\
-\t\t\t\tbindings[bindingPart] = {};\n\
+\t\t\tif (Array.isArray(bindingObject)) {\n\
+\t\t\t\tvar arrayIndex = bindingArray[index-1].match(REGEX_ARRAY)[1];\n\
+\t\t\t\tif (!bindingObject[arrayIndex]) {\n\
+\t\t\t\t\tbindingObject[arrayIndex] = {};\n\
+\t\t\t\t}\n\
+\t\t\t\tif (!bindingObject[arrayIndex][bindingString]) {\n\
+\t\t\t\t\tbindingObject[arrayIndex][bindingString] = {};\n\
+\t\t\t\t}\n\
+\t\t\t\tif ( index === bindingArray.length-1 ) {\n\
+\t\t\t\t\treturn addGettersAndSetters(bindingObject[arrayIndex], bindingString);\n\
+\t\t\t\t}\n\
+\t\t\t\treturn bindingObject[arrayIndex][bindingString];\n\
 \t\t\t}\n\
-\t\t\treturn bindings[bindingPart];\n\
+\t\t\tif ( index === bindingArray.length-1 ) {\n\
+\t\t\t\taddGettersAndSetters(bindingObject, bindingString);\n\
+\t\t\t}\n\
+\t\t\tif (!bindingObject[bindingString]) {\n\
+\t\t\t\tbindingObject[bindingString] = {};\n\
+\t\t\t}\n\
+\t\t\treturn bindingObject[bindingString];\n\
 \t\t}\n\
 \n\
-\t\tfunction addGettersAndSetters(bindings, key) {\n\
-\t\t\tObject.defineProperty(bindings, key, {\n\
+\t\tfunction addGettersAndSetters(bindings, bindingString) {\n\
+\t\t\tObject.defineProperty(bindings, bindingString, {\n\
 \t\t\t\tget: getter,\n\
 \t\t\t\tset: setter,\n\
 \t\t\t\tenumerable: true,\n\
@@ -5980,7 +6006,7 @@ function bindings(filter, root) {\n\
 \n\
 \t\t\tfunction getter() {\n\
 \t\t\t\tif (!element.parentNode) {\n\
-\t\t\t\t\tdelete bindings[key];\n\
+\t\t\t\t\tdelete bindings[bindingString];\n\
 \t\t\t\t\treturn undefined;\n\
 \t\t\t\t}\n\
 \t\t\t\treturn element.innerHTML;\n\
@@ -5988,21 +6014,23 @@ function bindings(filter, root) {\n\
 \n\
 \t\t\tfunction setter(value) {\n\
 \t\t\t\tif (!element.parentNode) {\n\
-\t\t\t\t\tdelete bindings[key];\n\
+\t\t\t\t\tdelete bindings[bindingString];\n\
 \t\t\t\t\tthrow new Error('element is not part of the dom');\n\
 \t\t\t\t}\n\
 \t\t\t\telement.innerHTML = value;\n\
 \t\t\t}\n\
+\n\
+\t\t\treturn bindings;\n\
 \t\t}\n\
 \n\
 \t\treturn bindings;\n\
-\t}, {});\n\
+\t}\n\
 \n\
 }\n\
 \n\
-function $(selector, root) {\n\
-\troot = root || document;\n\
-\treturn Array.prototype.slice.call(root.querySelectorAll(selector));\n\
+function $(selector, rootElement) {\n\
+\trootElement = rootElement || document;\n\
+\treturn Array.prototype.slice.call(rootElement.querySelectorAll(selector));\n\
 }\n\
 \n\
 module.exports = bindings;\n\

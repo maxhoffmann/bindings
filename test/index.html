@@ -19,6 +19,15 @@
 		<div id="roottest">
 			<span data-bind="pokemon.color">yellow</span>
 		</div>
+		<ul>
+			<li data-bind="shoppinglist[0].title">Milch</li>
+			<li data-bind="shoppinglist[1].title">Brot</li>
+			<li data-bind="shoppinglist[2].title">Käse <span data-bind="shoppinglist[2].status">done</span></li>
+		</ul>
+		<ul>
+			<li><span data-bind="wishlist.technology[0].game.platform">playstation4</span> <span data-bind="wishlist.technology[0].game.title">Killzone</span></li>
+			<li><span data-bind="wishlist.technology[1].game.playstation">xbox one</span> <span data-bind="wishlist.technology[1].game.title">Ryse</span></li>
+		</ul>
 	</div>
 	<script src="../components/visionmedia-mocha/mocha.js"></script>
 	<script>mocha.setup('bdd');</script>
