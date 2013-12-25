@@ -9,7 +9,7 @@ describe('bindings', function () {
 		testdom.innerHTML = testHTML;
 	});
 
-	it('should return an object with two bindings', function () {
+	it('should return objects', function () {
 		var data = bindings();
 
 		assert( !!data.dog, 'has dog bindings');
@@ -33,10 +33,10 @@ describe('bindings', function () {
 		assert( data.pokemon.color === 'new value', 'pokemon has setters');
 	});
 
-	it('should only return the specified binding', function () {
+	it('should return a specified binding', function () {
 		var dog = bindings('dog');
 
-		assert( dog.type === 'dog', 'dog is set correctly' );
+		assert( dog.type === 'dog', 'specified binding is set correctly' );
 	});
 
 	it('should only traverse children of the specified element', function () {
@@ -77,7 +77,7 @@ describe('bindings', function () {
 	it('should add objects to arrays', function () {
 		var data = bindings();
 
-		assert( data.shoppinglist[0].title === 'Milch', 'adds objects to array correctly' );
+		assert( data.shoppinglist[0].title === 'milk', 'adds objects to array correctly' );
 	});
 
 	it('should allow multiple values in objects in arrays', function () {
