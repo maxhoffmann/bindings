@@ -202,38 +202,64 @@ require.relative = function(parent) {
 require.register("bindings/index.js", function(exports, require, module){
 "use strict";
 
-function bindings(filter, root) {
+var REGEX_ARRAY = /\[([0-9]+)\]$/;
 
-	if ( !('querySelectorAll' in document && 'defineProperty' in Object && 'reduce' in Array.prototype) ) {
+function bindings(filter, rootElement) {
+
+	if ( !('querySelectorAll' in document
+		&& 'defineProperty' in Object
+		&& 'reduce' in Array.prototype)
+	) {
 		return {};
 	}
-	root = root || document;
+	rootElement = rootElement || document;
 
 	var selector = (filter) ? '[data-bind^="'+filter+'."]' : '[data-bind]';
-	var elements = $(selector, root);
+	var elementsWithBindings = $(selector, rootElement);
 
-	return elements.reduce(function(bindings, element) {
-		var binding = getBinding(element, filter);
-		binding.reduce(addToBindingsObject, bindings);
+	return elementsWithBindings.reduce(createBindingsObject, {});
 
-		function getBinding(element, filter) {
-			var binding = element.getAttribute('data-bind');
-			if ( filter ) binding = binding.split(filter+'.')[1];
-			return binding.split('.');
+	function createBindingsObject(bindings, element) {
+		var bindingsArray = getBindingsArrayFromElement(element, filter);
+		bindingsArray.reduce(convertBindingStringToObject, bindings);
+
+		function getBindingsArrayFromElement(element, filter) {
+			var bindingString = element.getAttribute('data-bind');
+			if ( filter ) bindingString = bindingString.split(filter+'.')[1];
+			return bindingString.split('.');
 		}
 
-		function addToBindingsObject(bindings, bindingPart, index, binding) {
-			if ( index === binding.length-1 ) {
-				addGettersAndSetters(bindings, bindingPart);
+		function convertBindingStringToObject(bindingObject, bindingString, index, bindingArray) {
+			if ( REGEX_ARRAY.test(bindingString) ) {
+				bindingString = bindingString.replace(REGEX_ARRAY,"");
+				if ( !bindingObject[bindingString] ) {
+					bindingObject[bindingString] = [];
+				}
 			}
-			if (!bindings[bindingPart]) {
-				bindings[bindingPart] = {};
+			if (Array.isArray(bindingObject)) {
+				var arrayIndex = bindingArray[index-1].match(REGEX_ARRAY)[1];
+				if (!bindingObject[arrayIndex]) {
+					bindingObject[arrayIndex] = {};
+				}
+				if (!bindingObject[arrayIndex][bindingString]) {
+					bindingObject[arrayIndex][bindingString] = {};
+				}
+				if ( index === bindingArray.length-1 ) {
+					return addGettersAndSetters(bindingObject[arrayIndex], bindingString);
+				}
+				return bindingObject[arrayIndex][bindingString];
 			}
-			return bindings[bindingPart];
+			if ( index === bindingArray.length-1 ) {
+				addGettersAndSetters(bindingObject, bindingString);
+			}
+			if (!bindingObject[bindingString]) {
+				bindingObject[bindingString] = {};
+			}
+			return bindingObject[bindingString];
 		}
 
-		function addGettersAndSetters(bindings, key) {
-			Object.defineProperty(bindings, key, {
+		function addGettersAndSetters(bindings, bindingString) {
+			Object.defineProperty(bindings, bindingString, {
 				get: getter,
 				set: setter,
 				enumerable: true,
@@ -242,7 +268,7 @@ function bindings(filter, root) {
 
 			function getter() {
 				if (!element.parentNode) {
-					delete bindings[key];
+					delete bindings[bindingString];
 					return undefined;
 				}
 				return element.innerHTML;
@@ -250,21 +276,23 @@ function bindings(filter, root) {
 
 			function setter(value) {
 				if (!element.parentNode) {
-					delete bindings[key];
+					delete bindings[bindingString];
 					throw new Error('element is not part of the dom');
 				}
 				element.innerHTML = value;
 			}
+
+			return bindings;
 		}
 
 		return bindings;
-	}, {});
+	}
 
 }
 
-function $(selector, root) {
-	root = root || document;
-	return Array.prototype.slice.call(root.querySelectorAll(selector));
+function $(selector, rootElement) {
+	rootElement = rootElement || document;
+	return Array.prototype.slice.call(rootElement.querySelectorAll(selector));
 }
 
 module.exports = bindings;
